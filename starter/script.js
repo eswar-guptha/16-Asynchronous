@@ -3,10 +3,10 @@
 const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
+/*
 ///////////////////////////////////////
-// Concept :- AJAC Call : XMLHttpRequest
+// Concept :- AJAX Call : XMLHttpRequest
 ///////////////////////////////////////
-
 let renderCountry = function (data, className = '') {
   let html = `
   <article class="country ${className}">
@@ -59,5 +59,64 @@ let getCountryData = function (country) {
   });
 };
 
+
 // getCountryData('Republic of India');
-getCountryData('usa');
+// getCountryData('usa');
+*/
+
+///////////////////////////////////////
+// Concept :- Promises and fetch API
+///////////////////////////////////////
+
+// let request = fetch(`https://restcountries.com/v2/name/Republic of India`);
+// console.log(request)
+
+///////////////////////////////////////
+// Concept :- Consuming Promises
+///////////////////////////////////////
+
+let neighbourEl = document.querySelectorAll('.neighbour');
+
+let renderCountry = function (data, className = '') {
+  let html = `
+  <article class="country ${className}">
+    <img class="country__img" src="${data.flag}" />
+    <div class="country__data">
+      <h3 class="country__name">${data.name}</h3>
+      <h4 class="country__region">${data.region}</h4>
+      <p class="country__row"><span>👫</span>${(
+        +data.population / 1000000
+      ).toFixed(1)} M</p>
+      <p class="country__row"><span>🗣️</span>${data.languages[0].name}</p>
+      <p class="country__row"><span>💰</span>${data.currencies[0].name}</p>
+    </div>
+  </article>
+  `;
+
+  countriesContainer.insertAdjacentHTML('beforeend', html);
+  countriesContainer.style.opacity = 1;
+};
+
+let getCountryData = function (country) {
+  // => country 1
+  fetch(`https://restcountries.com/v2/name/${country}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log(data[0]);
+      renderCountry(data[0]);
+
+      let neighbour = data[0].borders?.[0];
+      // country 2
+      return fetch(`https://restcountries.com/v2/alpha/${neighbour}`);
+    })
+    .then(response => response.json())
+    .then(data => {
+      renderCountry(data, 'neighbour');
+    });
+};
+
+getCountryData('Republic of India');
+// getCountryData('Maldives ');
+
+// https://restcountries.com/v2/name/
+// https://restcountries.com/v2/alpha/${neighbour}
